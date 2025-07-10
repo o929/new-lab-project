@@ -1,0 +1,255 @@
+   body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 30px;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #004085;
+      font-weight: 700;
+    }
+
+    #labReportsContainer {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .lab-form {
+      background: white;
+      border-radius: 10px;
+      padding: 25px 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+      transition: opacity 0.3s ease;
+    }
+
+    .lab-form h3 {
+      color: #007bff;
+      margin-top: 0;
+      border-bottom: 3px solid #007bff;
+      padding-bottom: 8px;
+      margin-bottom: 25px;
+      font-weight: 700;
+    }
+
+    .section {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 15px 20px;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .box {
+      border: 2px solid #007bff;
+      border-radius: 10px;
+      padding: 20px 25px;
+      margin-bottom: 30px;
+      background: #e9f0fb;
+    }
+
+    .box h4 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #0056b3;
+      font-weight: 700;
+      border-bottom: 2px solid #0056b3;
+      padding-bottom: 6px;
+    }
+
+    .box label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      color: #004085;
+      margin-bottom: 10px;
+    }
+
+    .box input[type="text"],
+    .box select {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1.8px solid #ccc;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    .box input[type="text"]:focus,
+    .box select:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    .box .color-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .box .color-row input[type="text"],
+    .box .color-row select {
+      flex: 1;
+    }
+
+    .section label {
+      font-weight: 600;
+    }
+
+    .section input[type="text"],
+    .section input[type="date"],
+    .section select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1.8px solid #ccc;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    .section input[type="text"]:focus,
+    .section input[type="date"]:focus,
+    .section select:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    button.edit,
+    button.delete,
+    button.send {
+      margin-top: 10px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button.edit {
+      background-color: #28a745;
+      color: white;
+    }
+
+    button.edit:hover {
+      background-color: #218838;
+    }
+
+    button.delete {
+      background-color: #dc3545;
+      color: white;
+      margin-left: 15px;
+    }
+
+    button.delete:hover {
+      background-color: #c82333;
+    }
+
+    button.send {
+      background-color: #007bff;
+      color: white;
+      margin-left: 15px;
+    }
+
+    button.send:hover {
+      background-color: #0056b3;
+    }
+
+    #addReportBtn {
+      display: block;
+      margin: 0 auto 50px;
+      background: #007bff;
+      color: white;
+      font-weight: 700;
+      padding: 14px 40px;
+      border-radius: 10px;
+      border: none;
+      font-size: 17px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #addReportBtn:hover {
+      background-color: #0056b3;
+    }
+
+    #confirmBox {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 25px 30px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.25);
+      z-index: 999;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    #confirmBox p {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    #confirmBox button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 0 10px;
+      font-size: 15px;
+    }
+
+    #confirmYesBtn {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    #confirmYesBtn:hover {
+      background-color: #c82333;
+    }
+
+    #confirmNoBtn {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    #confirmNoBtn:hover {
+      background-color: #565e64;
+    }
+
+    .toggle-content {
+      transition: max-height 0.4s ease, opacity 0.4s ease;
+      overflow: hidden;
+      /* max-height: 500px; */
+      /* enough height for content */
+      opacity: 1;
+    }
+
+#wrapper.wrapped {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  /* max-height: 250px; */
+}
+
+#labReportsContainer.wrapped  {
+  /* smaller flexible width */
+  height: 22px;
+
+  width: 100%;
+  /* overflow: hidden; */
+  background-color: red;
+}
+
+
