@@ -1,43 +1,47 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import "./App.css";
 
-const fields = [
-  "patientName",
-  "date",
-  "bfMalaria",
-  "ictMalaria",
-  "hb",
-  "twbc",
-  "esr",
-  "rf",
-  "aso",
-  "rbs",
-  "fbs",
-  "hpp",
-  "urineColour",
-  "urineColourSelect",
-  "urineReaction",
-  "urineSugar",
-  "urineAlbumin",
-  "stoolColour",
-  "stoolColourSelect",
-  "stoolConsistency",
-  "stoolMucous",
-  "stoolBlood",
-  "stoolWorms",
-  "sign",
+const dropdownOptions = {
+  urineColour: ["clear", "yellow", "amber", "red"],
+  urineReaction: ["acidic", "neutral", "alkaline"],
+  urineSugar: ["negative", "trace", "+", "++", "++++"],
+  urineAlbumin: ["negative", "trace", "+", "++", "++++"],
+  stoolColour: ["brown", "green", "black", "red"],
+  stoolConsistency: ["formed", "semi-formed", "watery"],
+  abo: ["A", "B", "AB", "O"],
+  rh: ["+", "-"],
+  urinePusCells: ["0-2/HPF", "3-5/HPF", "6-10/HPF", ">10/HPF"],
+  urineRBCs: ["0-2/HPF", "3-5/HPF", "6-10/HPF", ">10/HPF"],
+  stoolPusCells: ["0-2/HPF", "3-5/HPF", "6-10/HPF", ">10/HPF"],
+  stoolRBCs: ["0-2/HPF", "3-5/HPF", "6-10/HPF", ">10/HPF"]
+};
+
+const checkboxFields = [
+  "urineCrystals", "urineOva", "urineTrichomonas", "urineYeast",
+  "stoolCystOva", "stoolFlagellates", "stoolTrophozoite", "stoolUndigestedFood"
 ];
+
+const fields = [
+  "patientName", "date", "sign", "bfMalaria", "ictMalaria", "hb", "twbc", "esr", "rf",
+  "aso", "rbs", "fbs", "hpp", "hcg", "abo", "rh", "hiv", "hbv", "hcv", "urea",
+  "creatinine", "urineColour", "urineReaction", "urineSugar", "urineAlbumin",
+  "urinePusCells", "urineRBCs", "urineEPCs", "urineCasts", "urineCrystals",
+  "urineOva", "urineTrichomonas", "urineYeast", "urineOthers", "stoolColour",
+  "stoolConsistency", "stoolMucous", "stoolBlood", "stoolWorms",
+  "stoolPusCells", "stoolRBCs", "stoolCystOva", "stoolFlagellates",
+  "stoolTrophozoite", "stoolUndigestedFood", "stoolOthers"
+];
+
+const urineGeneralFields = ["urineColour", "urineReaction", "urineSugar", "urineAlbumin"];
+const stoolGeneralFields = ["stoolColour", "stoolConsistency", "stoolMucous", "stoolBlood", "stoolWorms"];
 
 const defaultReportData = () => {
   const data = {};
   fields.forEach((field) => {
-    data[field] = "";
+    data[field] = checkboxFields.includes(field) ? false : "";
   });
-  data["bfMalaria"] = "";
-  data["urineColourSelect"] = "clear";
-  data["stoolColourSelect"] = "brown";
   return data;
 };
 
@@ -47,9 +51,8 @@ const LabReportSystem = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [messageBox, setMessageBox] = useState(null);
   const [messageColor, setMessageColor] = useState("#007bff");
-
-  // New state for search query
   const [searchQuery, setSearchQuery] = useState("");
+  const reportRefs = useRef({});
 
   useEffect(() => {
     emailjs.init("7o9FV7q7E2a0Cd7lf");
@@ -57,9 +60,7 @@ const LabReportSystem = () => {
 
   useEffect(() => {
     const saved = localStorage.getItem("activeReports");
-    if (saved) {
-      setReports(JSON.parse(saved));
-    }
+    if (saved) setReports(JSON.parse(saved));
   }, []);
 
   const handleAddReport = () => {
@@ -67,7 +68,7 @@ const LabReportSystem = () => {
       id: Date.now(),
       data: defaultReportData(),
       edit: true,
-      wrapped: false,
+      wrapped: false
     };
     const updated = [...reports, newReport];
     setReports(updated);
@@ -76,26 +77,20 @@ const LabReportSystem = () => {
 
   const handleInputChange = (id, name, value) => {
     setReports((prev) =>
-      prev.map((r) =>
-        r.id === id ? { ...r, data: { ...r.data, [name]: value } } : r
-      )
+      prev.map((r) => (r.id === id ? { ...r, data: { ...r.data, [name]: value } } : r))
     );
   };
 
   const handleSave = (id) => {
     setReports((prev) => {
-      const updated = prev.map((r) =>
-        r.id === id ? { ...r, edit: false } : r
-      );
+      const updated = prev.map((r) => (r.id === id ? { ...r, edit: false } : r));
       localStorage.setItem("activeReports", JSON.stringify(updated));
       return updated;
     });
   };
 
   const handleEdit = (id) => {
-    setReports((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, edit: true } : r))
-    );
+    setReports((prev) => prev.map((r) => (r.id === id ? { ...r, edit: true } : r)));
   };
 
   const handleDelete = (id) => {
@@ -117,267 +112,149 @@ const LabReportSystem = () => {
     setShowConfirm(false);
     setDeleteId(null);
   };
+const [loading, setLoading] = useState(false);
 
-  const sendReport = (report) => {
-    const templateParams = { ...report.data };
 
-    emailjs
-      .send("service_wscmthg", "template_gtqluvi", templateParams)
-      .then(() => {
-        setMessageBox("Message sent successfully to the doctor!");
-        setMessageColor("#28a745");
-        setTimeout(() => setMessageBox(null), 5000);
-      })
-      .catch((error) => {
-        console.error("FAILED...", error);
-        setMessageBox("Failed to send message. Please try again.");
-        setMessageColor("#dc3545");
-        setTimeout(() => setMessageBox(null), 5000);
-      });
-  };
+const sendReport = (report) => {
+  setLoading(true);  // start loading
+  emailjs
+    .send("service_wscmthg", "template_gtqluvi", report.data)
+    .then(() => {
+      setLoading(false);  // stop loading
+      setMessageBox("Message sent successfully to the doctor!");
+      setMessageColor("#28a745");
+      setTimeout(() => setMessageBox(null), 3000);
+    })
+    .catch(() => {
+      setLoading(false);  // stop loading
+      setMessageBox("Failed to send message. Please try again.");
+      setMessageColor("#dc3545");
+      setTimeout(() => setMessageBox(null), 3000);
+    });
+};
+
+
 
   const toggleWrap = (id) => {
-    setReports((prev) => {
-      const updated = prev.map((r) =>
-        r.id === id ? { ...r, wrapped: !r.wrapped } : r
-      );
-      localStorage.setItem("activeReports", JSON.stringify(updated));
-      return updated;
-    });
+    setReports((prev) => prev.map((r) => (r.id === id ? { ...r, wrapped: !r.wrapped } : r)));
   };
 
   const formatLabel = (field) =>
-    field
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (str) => str.toUpperCase());
+    field.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
 
-  // Filter reports based on search query (case-insensitive)
+  const renderInputField = (report, field) => (
+    <div key={field} className="section">
+      <label htmlFor={`${field}-${report.id}`}>{formatLabel(field)}:</label>
+      <input
+        id={`${field}-${report.id}`}
+        type="text"
+        value={report.data[field]}
+        disabled={!report.edit}
+        onChange={(e) => handleInputChange(report.id, field, e.target.value)}
+      />
+    </div>
+  );
+
+  const renderOtherFields = (report) =>
+    fields.filter(
+      (f) =>
+        !urineGeneralFields.includes(f) &&
+        !stoolGeneralFields.includes(f) &&
+        f !== "patientName"
+    ).map((field) => renderInputField(report, field));
+
   const filteredReports = reports.filter((report) =>
-    report.data.patientName
-      .toLowerCase()
-      .includes(searchQuery.trim().toLowerCase())
+    report.data.patientName.toLowerCase().includes(searchQuery.trim().toLowerCase())
   );
 
   return (
     <div className="lab-report-system" style={{ padding: "20px" }}>
       <h2>Hospital Lab Report System</h2>
-
-      {/* Search box */}
       <input
         type="text"
         placeholder="Search by patient name..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        style={{
-          padding: "8px 12px",
-          width: "100%",
-          maxWidth: "400px",
-          marginBottom: "15px",
-          borderRadius: "6px",
-          border: "1px solid #ccc",
-          fontSize: "1rem",
-        }}
+        style={{ marginBottom: 15, padding: 10, width: "100%", maxWidth: 400 }}
       />
-
-      <button onClick={handleAddReport} style={{ marginBottom: "15px" }}>
-        Add New Lab Report
-      </button>
-
       {messageBox && (
-        <div
-          style={{
-            marginTop: 10,
-            padding: "10px 15px",
-            backgroundColor: messageColor,
-            color: "white",
-            borderRadius: "5px",
-            textAlign: "center",
-          }}
-        >
-          {messageBox}
-        </div>
+        <div id="messageBox" style={{ backgroundColor: messageColor, color: "white", padding: 10, borderRadius: 6 }}>{messageBox}</div>
       )}
+{loading && (
+  <div id="loadingMessageBox" style={{backgroundColor: "white", position: "fixed",top: "50%" ,left: "50%" ,padding: 10, zIndex: 1000000, color: "#007bff" }}>
+    Sending report... ⏳
+  </div>
+)}
 
-      <div
-        id="labReportsContainer"
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "8px",
-          alignItems: "flex-start",
-        }}
-      >
-        {filteredReports.length === 0 ? (
-          <p>No lab reports found.</p>
-        ) : (
-          filteredReports.map((report, idx) => (
-            <div
-              key={report.id}
-              className="lab-form"
-              data-id={report.id}
-              style={{
-                border: "1px solid #ccc",
-                padding: "15px",
-                borderRadius: "8px",
-                backgroundColor: "#f9f9f9",
-                flex: "1 1 320px",
-                maxWidth: "100%",
-                boxSizing: "border-box",
-                position: "relative",
-                height: report.wrapped ? "60px" : "auto",
-                overflow: "hidden",
-                transition: "height 0.35s ease",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  borderBottom: "2px solid #007bff",
-                  paddingBottom: "5px",
-                  position: "sticky",
-                  top: 0,
-                  backgroundColor: "#f9f9f9",
-                  zIndex: 2,
-                }}
-              >
-                <h3 style={{ margin: 0, fontSize: "1.1rem" }}>
-                  Lab Report #{idx + 1}
-                </h3>
-                <button
-                  onClick={() => toggleWrap(report.id)}
-                  style={{
-                    background: "#007bff",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    padding: "5px 8px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "3px",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  aria-label={report.wrapped ? "Expand report" : "Collapse report"}
-                >
-                  {report.wrapped ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-                </button>
+{messageBox && !loading && (
+  <div style={{ backgroundColor: messageColor, color: "white", padding: 10, borderRadius: 6 }}>
+    {messageBox}
+  </div>
+)}
+
+      {filteredReports.map((report, idx) => (
+        <div
+          key={report.id}
+          className="lab-form"
+          ref={(el) => (reportRefs.current[report.id] = el)}
+          style={{ border: "1px solid #ccc", padding: 15, marginBottom: 20, borderRadius: 8 }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 15 }}>
+              <h3 style={{ margin: 0 }}>Lab Report #{idx + 1}</h3>
+              <div>
+                <label htmlFor={`patientName-${report.id}`} style={{ fontWeight: 600 }}>Patient:</label>
+                <input
+                  id={`patientName-${report.id}`}
+                  type="text"
+                  value={report.data.patientName}
+                  disabled={!report.edit}
+                  onChange={(e) => handleInputChange(report.id, "patientName", e.target.value)}
+                  style={{ padding: "4px 8px", fontSize: 14 }}
+                />
               </div>
-
-              <div
-                style={{
-                  marginTop: "10px",
-                  flexGrow: 1,
-                  overflowY: report.wrapped ? "hidden" : "auto",
-                }}
-              >
-                {!report.wrapped &&
-                  fields.map((field) => (
-                    <div key={field} style={{ marginBottom: "10px" }}>
-                      <label style={{ display: "block" }}>{formatLabel(field)}:</label>
-                      <input
-                        type="text"
-                        value={report.data[field]}
-                        disabled={!report.edit}
-                        onChange={(e) =>
-                          handleInputChange(report.id, field, e.target.value)
-                        }
-                        style={{ width: "100%" }}
-                      />
-                    </div>
-                  ))}
-              </div>
-
-              {!report.wrapped && (
-                <div style={{ textAlign: "right", marginTop: "auto" }}>
-                  {report.edit ? (
-                    <button className="edit" onClick={() => handleSave(report.id)}>
-                      Save
-                    </button>
-                  ) : (
-                    <button className="edit" onClick={() => handleEdit(report.id)}>
-                      Edit
-                    </button>
-                  )}
-                  <button
-                    className="delete"
-                    style={{ marginLeft: "15px" }}
-                    onClick={() => handleDelete(report.id)}
-                  >
-                    Delete
-                  </button>
-                  <button
-                    className="send"
-                    style={{ marginLeft: "15px" }}
-                    onClick={() => sendReport(report)}
-                  >
-                    Send to the doctor
-                  </button>
-                </div>
-              )}
             </div>
-          ))
-        )}
-      </div>
+            <button onClick={() => toggleWrap(report.id)}>
+              {report.wrapped ? <ChevronDown /> : <ChevronUp />}
+            </button>
+          </div>
+
+          {!report.wrapped && (
+            <div style={{ marginTop: 10 }}>
+              <div className="other-fields-grid">{renderOtherFields(report)}</div>
+              <div className="general-sections-container">
+                <div className="box">
+                  <h4>Urine General</h4>
+                  {urineGeneralFields.map((field) => renderInputField(report, field))}
+                </div>
+                <div className="box">
+                  <h4>Stool General</h4>
+                  {stoolGeneralFields.map((field) => renderInputField(report, field))}
+                </div>
+              </div>
+              <div style={{ textAlign: "right", marginTop: 15 }}>
+                {report.edit ? (
+                  <button className="edit" onClick={() => handleSave(report.id)}>Save</button>
+                ) : (
+                  <button className="edit" onClick={() => handleEdit(report.id)}>Edit</button>
+                )}
+                <button className="delete" onClick={() => handleDelete(report.id)}>Delete</button>
+                <button className="send" onClick={() => sendReport(report)}>Send to the doctor</button>
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
 
       {showConfirm && (
-        <div
-          id="confirmBox"
-          style={{
-            display: "block",
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            background: "white",
-            padding: "25px 30px",
-            boxShadow: "0 0 15px rgba(0,0,0,0.25)",
-            zIndex: 999,
-            borderRadius: "10px",
-            textAlign: "center",
-          }}
-        >
+        <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", backgroundColor: "white", padding: 30, borderRadius: 10, boxShadow: "0 0 15px rgba(0,0,0,0.3)" }}>
           <p>Are you sure you want to delete this report?</p>
-          <button
-            id="confirmYesBtn"
-            style={{
-              backgroundColor: "#dc3545",
-              color: "white",
-              padding: "10px 20px",
-              borderRadius: "6px",
-              fontWeight: "700",
-              cursor: "pointer",
-              margin: "0 10px",
-              fontSize: "15px",
-              border: "none",
-            }}
-            onClick={confirmDelete}
-          >
-            Yes
-          </button>
-          <button
-            id="confirmNoBtn"
-            style={{
-              backgroundColor: "#6c757d",
-              color: "white",
-              padding: "10px 20px",
-              borderRadius: "6px",
-              fontWeight: "700",
-              cursor: "pointer",
-              margin: "0 10px",
-              fontSize: "15px",
-              border: "none",
-            }}
-            onClick={cancelDelete}
-          >
-            No
-          </button>
+          <button id="confirmYesBtn" onClick={confirmDelete} style={{ backgroundColor: "#dc3545", color: "white", padding: 10, marginRight: 10 }}>Yes</button>
+          <button id="confirmNoBtn" onClick={cancelDelete} style={{ backgroundColor: "#6c757d", color: "white", padding: 10 }}>No</button>
         </div>
       )}
+      <button id="addReportBtn" onClick={handleAddReport}>Add New Lab Report</button>
+
     </div>
   );
 };
