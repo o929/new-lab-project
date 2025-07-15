@@ -135,9 +135,16 @@ const sendReport = (report) => {
 
 
 
-  const toggleWrap = (id) => {
-    setReports((prev) => prev.map((r) => (r.id === id ? { ...r, wrapped: !r.wrapped } : r)));
-  };
+const toggleWrap = (id) => {
+  setReports((prev) => {
+    const updated = prev.map((r) =>
+      r.id === id ? { ...r, wrapped: !r.wrapped } : r
+    );
+    localStorage.setItem("activeReports", JSON.stringify(updated));
+    return updated;
+  });
+};
+
 
   const formatLabel = (field) =>
     field.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
@@ -155,6 +162,7 @@ const sendReport = (report) => {
     </div>
   );
 
+
   const renderOtherFields = (report) =>
     fields.filter(
       (f) =>
@@ -166,10 +174,22 @@ const sendReport = (report) => {
   const filteredReports = reports.filter((report) =>
     report.data.patientName.toLowerCase().includes(searchQuery.trim().toLowerCase())
   );
+  const [allWrapped, setAllWrapped] = useState(false);
+
+const toggleWrapAll = () => {
+  setReports((prev) => {
+    const updated = prev.map((r) => ({ ...r, wrapped: !allWrapped }));
+    localStorage.setItem("activeReports", JSON.stringify(updated));
+    return updated;
+  });
+  setAllWrapped(!allWrapped);
+};
+
 
   return (
     <div className="lab-report-system" style={{ padding: "20px" }}>
       <h2>Hospital Lab Report System</h2>
+
       <input
         type="text"
         placeholder="Search by patient name..."
@@ -185,6 +205,9 @@ const sendReport = (report) => {
     Sending report... ⏳
   </div>
 )}
+{/* <button id="wrapall" onClick={toggleWrapAll} aria-label={allWrapped ? "Unwrap All Reports" : "Wrap All Reports"}>
+  {allWrapped ? <ChevronDown size={24} />  : <ChevronUp size={24} />}
+</button> */}
 
 {messageBox && !loading && (
   <div style={{ backgroundColor: messageColor, color: "white", padding: 10, borderRadius: 6 }}>
@@ -213,6 +236,7 @@ const sendReport = (report) => {
                   style={{ padding: "4px 8px", fontSize: 14 }}
                 />
               </div>
+              
             </div>
             <button onClick={() => toggleWrap(report.id)}>
               {report.wrapped ? <ChevronDown /> : <ChevronUp />}
