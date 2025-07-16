@@ -178,12 +178,13 @@ const toggleWrap = (id) => {
 
 const toggleWrapAll = () => {
   setReports((prev) => {
-    const updated = prev.map((r) => ({ ...r, wrapped: !allWrapped }));
+    const updated = prev.map((r) => ({ ...r, wrapped: true }));
     localStorage.setItem("activeReports", JSON.stringify(updated));
     return updated;
   });
-  setAllWrapped(!allWrapped);
+  setAllWrapped(true); // optional for consistency
 };
+
 
 
   return (
@@ -241,6 +242,18 @@ const toggleWrapAll = () => {
             <button onClick={() => toggleWrap(report.id)}>
               {report.wrapped ? <ChevronDown /> : <ChevronUp />}
             </button>
+            
+{filteredReports.length > 0 && filteredReports.every(r => !r.wrapped) && (
+  <div className="tooltip-container">
+    <button id="wrapall" onClick={toggleWrapAll} aria-label="Wrap All Reports">
+      <ChevronUp size={24} />
+    </button>
+    <span className="tooltip-text">Wrap All</span>
+  </div>
+)}
+
+
+
           </div>
 
           {!report.wrapped && (
