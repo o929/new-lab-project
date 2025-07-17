@@ -50,13 +50,14 @@ const defaultReportData = () => {
 
 const LabReportSystem = () => {
   const [reports, setReports] = useState([]);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [messageBox, setMessageBox] = useState(null);
   const [messageColor, setMessageColor] = useState("#007bff");
   const [searchQuery, setSearchQuery] = useState("");
   const reportRefs = useRef({});
-
+  const [loading, setLoading] = useState(false);
+  
   useEffect(() => {
     emailjs.init("7o9FV7q7E2a0Cd7lf");
   }, []);
@@ -115,8 +116,9 @@ const LabReportSystem = () => {
     setShowConfirm(false);
     setDeleteId(null);
   };
-const [loading, setLoading] = useState(false);
+  //laoding state for sending report
 
+///Firebase function to send report
 
 const sendReport = async (report) => {
   setLoading(true);
