@@ -27,7 +27,7 @@ const checkboxFields = [
 ];
 
 const fields = [
-  "patientName", "date", "sign", "bfMalaria", "ictMalaria", "hb", "twbc", "esr", "rf",
+  "patientNumber","patientName", "date", "sign", "bfMalaria", "ictMalaria", "hb", "twbc", "esr", "rf",
   "aso", "rbs", "fbs", "hpp", "hcg", "abo", "rh", "hiv", "hbv", "hcv", "urea",
   "creatinine", "urineColour", "urineReaction", "urineSugar", "urineAlbumin",
   "urinePusCells", "urineRBCs", "urineEPCs", "urineCasts", "urineCrystals",
