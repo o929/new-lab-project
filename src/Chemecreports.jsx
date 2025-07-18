@@ -11,16 +11,14 @@ function defaultChemecReportData() {
   };
 }
 
-const ChemecReports = () => {
+const SavedChemecReports = () => {
   const [newReport, setNewReport] = useState(defaultChemecReportData());
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewReport((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Save to Firestore
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -42,7 +40,7 @@ const ChemecReports = () => {
           placeholder="Patient Name"
           value={newReport.patientName}
           onChange={handleChange}
-          required
+           
         />
         <input
           type="number"
@@ -50,7 +48,7 @@ const ChemecReports = () => {
           placeholder="Age"
           value={newReport.age}
           onChange={handleChange}
-          required
+           
         />
         <input
           type="text"
@@ -58,7 +56,7 @@ const ChemecReports = () => {
           placeholder="Test Result"
           value={newReport.testResult}
           onChange={handleChange}
-          required
+           
         />
         <input
           type="date"
@@ -72,4 +70,4 @@ const ChemecReports = () => {
   );
 };
 
-export default ChemecReports;
+export default SavedChemecReports;

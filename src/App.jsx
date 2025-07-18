@@ -10,8 +10,8 @@ function App() {
   return (
     <Router>
      <nav id="nav" >
-        <Link to="/lab" style={{ marginRight: "1rem", color: "white" ,fontSize:"20px"}}>Lab Reports</Link>
-        <Link to="/chemec" style={{color: "white" ,fontSize: "20px"}}>Chemec Reports</Link>
+        <Link to="/lab" style={{ marginRight: "2rem", color: "white" ,fontSize:"18px"}}>Send Lab Reports</Link>
+        <Link to="/chemec" style={{color: "white" ,fontSize: "18px"}}>Send Chemec Reports</Link>
       </nav>
       
       <Routes>
