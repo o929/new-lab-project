@@ -27,18 +27,17 @@ const checkboxFields = [
 ];
 
 const fields = [
-  "patientNumber","patientName", "date", "sign", "bfMalaria", "ictMalaria", "hb", "twbc", "esr", "rf",
-  "aso", "rbs", "fbs", "hpp", "hcg", "abo", "rh", "hiv", "hbv", "hcv", "urea",
-  "creatinine", "urineColour", "urineReaction", "urineSugar", "urineAlbumin",
-  "urinePusCells", "urineRBCs", "urineEPCs", "urineCasts", "urineCrystals",
-  "urineOva", "urineTrichomonas", "urineYeast", "urineOthers", "stoolColour",
-  "stoolConsistency", "stoolMucous", "stoolBlood", "stoolWorms",
-  "stoolPusCells", "stoolRBCs", "stoolCystOva", "stoolFlagellates",
-  "stoolTrophozoite", "stoolUndigestedFood", "stoolOthers"
+  "patientNumber", "patientName", "date", "sign",
+  "bfMalaria", "ictMalaria", "hb", "twbc", "esr", "rf",
+  "aso", "rbs", "fbs", "hpp", "hcg", "bg", "abo", "rh",
+  "widalBo", "widalO", "widalC", "widalH", "widalBruc",
+  "hiv", "hbv", "hcv", "ictHpaab", "urea", "creatinine",
 ];
 
-const urineGeneralFields = ["urineColour", "urineReaction", "urineSugar", "urineAlbumin"];
-const stoolGeneralFields = ["stoolColour", "stoolConsistency", "stoolMucous", "stoolBlood", "stoolWorms"];
+const urineGeneralFields = ["Color", "Reaction", "Sugar", ,"Acetone","Bile Pig"];
+const stoolGeneralFields = ["Colour", "Consistency", "Mucous", "Blood", "Worms"];
+const depositsFeilds = ["d.Pus", "d.R.B.Cs", "E.P cels", "Casts", "Crystalis","Undingeste Ova","Trichomans V","Yeast","Others"];
+const microscopicFeilds = ["Pus", "R.B.Cs", "Cysts/Ova", "Flagllates", "Trophozoite","Undingeste Food","Others"];
 
 const defaultReportData = () => {
   const data = {};
@@ -181,6 +180,9 @@ const toggleWrap = (id) => {
   const filteredReports = reports.filter((report) =>
     report.data.patientName.toLowerCase().includes(searchQuery.trim().toLowerCase())
   );
+
+
+  ///wrap
   const [allWrapped, setAllWrapped] = useState(false);
 
 const toggleWrapAll = () => {
@@ -274,6 +276,14 @@ const toggleWrapAll = () => {
                 <div className="box">
                   <h4>Stool General</h4>
                   {stoolGeneralFields.map((field) => renderInputField(report, field))}
+                </div>
+                     <div className="box">
+                  <h4>Depoditd</h4>
+                  {depositsFeilds.map((field) => renderInputField(report, field))}
+                </div>
+                     <div className="box">
+                  <h4>Microdcopic</h4>
+                  {microscopicFeilds.map((field) => renderInputField(report, field))}
                 </div>
               </div>
               <div style={{ textAlign: "right", marginTop: 15 }}>
