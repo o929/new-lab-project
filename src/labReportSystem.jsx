@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import emailjs from "@emailjs/browser";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import "./App.css";
 import { db } from "./fireBaseConfig";
@@ -33,22 +32,35 @@ const fields = [
   "widalBo", "widalO", "widalC", "widalH", "widalBruc",
   "hiv", "hbv", "hcv", "ictHpaab", "urea", "creatinine",
 ];
-
-const urineGeneralFields = ["Color", "Reaction", "Sugar", ,"Acetone","Bile Pig"];
+const urineGeneralFields = ["Color", "Reaction", "Sugar", "Acetone", "Bile Pig"];
 const stoolGeneralFields = ["Colour", "Consistency", "Mucous", "Blood", "Worms"];
-const depositsFeilds = ["d.Pus", "d.R.B.Cs", "E.P cels", "Casts", "Crystalis","Undingeste Ova","Trichomans V","Yeast","Others"];
-const microscopicFeilds = ["Pus", "R.B.Cs", "Cysts/Ova", "Flagllates", "Trophozoite","Undingeste Food","Others"];
+const depositFields = ["d.Pus", "d.R.B.Cs", "E.P Cells", "Casts", "Crystals", "Undigested Ova", "Trichomonas V", "Yeast", "Others"];
+const microscopicFields = ["Pus", "R.B.Cs", "Cysts/Ova", "Flagellates", "Trophozoite", "Undigested Food", "Others"];
 
 const defaultReportData = () => {
   const data = {};
   fields.forEach((field) => {
     data[field] = checkboxFields.includes(field) ? false : "";
   });
+  urineGeneralFields.forEach((field) => {
+    data[field] = "";
+  });
+  stoolGeneralFields.forEach((field) => {
+    data[field] = "";
+  });
+  depositFields.forEach((field) => {
+    data[field] = "";
+  });
+  microscopicFields.forEach((field) => {
+    data[field] = "";
+  });
   return data;
 };
 
+// console.log("Reports:", reports);
+
 const LabReportSystem = () => {
-  const [reports, setReports] = useState([]);
+const [reports, setReports] = useState([]);
   const [deleteId, setDeleteId] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [messageBox, setMessageBox] = useState(null);
@@ -57,9 +69,6 @@ const LabReportSystem = () => {
   const reportRefs = useRef({});
   const [loading, setLoading] = useState(false);
   
-  useEffect(() => {
-    emailjs.init("7o9FV7q7E2a0Cd7lf");
-  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem("activeReports");
@@ -177,9 +186,17 @@ const toggleWrap = (id) => {
         f !== "patientName"
     ).map((field) => renderInputField(report, field));
 
-  const filteredReports = reports.filter((report) =>
-    report.data.patientName.toLowerCase().includes(searchQuery.trim().toLowerCase())
+
+const filteredReports = reports.filter((report) => {
+  if (!report.data) return false;
+  if (!searchQuery) return true;
+  return (
+    report.data.patientName &&
+    report.data.patientName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+});
+
+
 
 
   ///wrap
@@ -277,13 +294,14 @@ const toggleWrapAll = () => {
                   <h4>Stool General</h4>
                   {stoolGeneralFields.map((field) => renderInputField(report, field))}
                 </div>
+      <div className="box">
+  <h4>microscopicFields</h4>
+  {depositFields.map((field) => renderInputField(report, field))}
+</div>
+
                      <div className="box">
-                  <h4>Depoditd</h4>
-                  {depositsFeilds.map((field) => renderInputField(report, field))}
-                </div>
-                     <div className="box">
-                  <h4>Microdcopic</h4>
-                  {microscopicFeilds.map((field) => renderInputField(report, field))}
+                  <h4>Microscopic</h4>
+                  {microscopicFields.map((field) => renderInputField(report, field))}
                 </div>
               </div>
               <div style={{ textAlign: "right", marginTop: 15 }}>
@@ -307,6 +325,7 @@ const toggleWrapAll = () => {
           <button id="confirmNoBtn" onClick={cancelDelete} style={{ backgroundColor: "#6c757d", color: "white", padding: 10 }}>No</button>
         </div>
       )}
+      
       <button id="addReportBtn" onClick={handleAddReport}>Add New Lab Report</button>
 
     </div>
